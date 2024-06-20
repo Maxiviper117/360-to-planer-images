@@ -55,31 +55,45 @@ def panorama_to_plane(panorama_path, FOV, output_size, yaw, pitch):
 
     return output_image
 
-
-
 import argparse
 
 # Create the parser
 parser = argparse.ArgumentParser(description='Process some integers.')
 
 # Add arguments
-parser.add_argument('--input_path', type=str, default='input_images', help='Path to the input panorama image')
+parser.add_argument('--input_path', type=str, help='Path to the input panorama image', required=True)
 parser.add_argument('--output_path', type=str, default='output_images', help='Path to the output images')
 parser.add_argument('--FOV', type=int, default=100, help='Field of View')
 parser.add_argument('--output_width', type=int, default=1000, help='Width of the output image')
 parser.add_argument('--output_height', type=int, default=1500, help='Height of the output image')
 # parser.add_argument('--yaw', type=int, default=0, help='Yaw angle (rotation around the vertical axis - left/right)')
-parser.add_argument('--pitch', type=int, default=90, help='Pitch angle (rotation around the horizontal axis - up/down)')
-parser.add_argument("--list-of-yaw", nargs="+", type=int, default=[0, 60, 120, 180, 240, 300], help="List of yaw angles e.g. --list-of-yaw 0 60 120 180 240 300")
+parser.add_argument('--pitch', type=int, default=90, help='Pitch angle (vertical). Must be between 1 and 179.')
+parser.add_argument("--list-of-yaw", nargs="+", type=int, default=[0, 60, 120, 180, 240, 300], help="List of yaw angles (horizontal) e.g. --list-of-yaw 0 60 120 180 240 300")
 
 # Parse the arguments
 args = parser.parse_args()
+
+def check_pitch(value):
+    ivalue = int(value)
+    if ivalue < 1 or ivalue > 179:
+        raise argparse.ArgumentTypeError("%s is an invalid pitch value. It must be between 1 and 179." % value)
+    return ivalue
+
+def check_yaw(values: list[int]):
+    for val in values:
+        if val < 0 or val > 360:
+            # exit
+            raise argparse.ArgumentTypeError(f"{val} is an invalid yaw value. It must be between 0 and 360.")
+
+check_pitch(args.pitch)
+check_yaw(args.list_of_yaw)
+        
 
 # Accessing argument values
 FOV = args.FOV
 output_size = (args.output_width, args.output_height)
 # yaw = args.yaw
-pitch = args.pitch
+pitch = 180 - args.pitch
 
 yawList = args.list_of_yaw
 
@@ -99,7 +113,8 @@ for image_path in input_path.glob('*.jpg'):
     file_name = image_path.stem  # Extract file name without extension
     
     for yaw in yawList:
-        output_image_name = f"{file_name}_yaw_{yaw}.jpg"
+        output_image_name = f"{file_name}_pitch{args.pitch}_yaw{yaw}.jpg"
         output_image_path = output_path / output_image_name
         output_image = panorama_to_plane(str(image_path), FOV, output_size, yaw, pitch)
         output_image.save(output_image_path)
+
