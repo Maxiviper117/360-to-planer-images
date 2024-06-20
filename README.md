@@ -34,7 +34,8 @@ The script `app/pano_to_planar.py` converts panorama images to plane projections
     - This argument specifies the directory where the input panorama images are stored. If not provided, the script defaults to using a directory named `input_images` in the current working directory. This directory should contain the panorama images you intend to process.
 
 2. `--output_path`: 
-    - This argument defines the directory where the processed (output) images will be saved. If this argument is not specified, the script uses a default directory named `output_images`. If the specified directory does not exist, the script may create it depending on its implementation.
+    - This argument defines the directory where the processed (output) images will be saved. If this argument is not specified, the script uses a default directory named `output_images` in the current working directory.
+    - If the specified directory does not exist, the script may create it depending on its implementation.
 
 3. `--FOV` (Field of View): 
     - This parameter sets the field of view for the output images in degrees. The default value is 100 degrees. It determines how wide the view should be in the resulting images. A larger FOV captures a wider area but may introduce more distortion.
@@ -45,11 +46,16 @@ The script `app/pano_to_planar.py` converts panorama images to plane projections
 5. `--output_height`: 
     - Similar to `--output_width`, this argument sets the height of the output images in pixels, with a default value of 1500 pixels. This height will be used for all images processed by the script.
 
+
 6. `--pitch`: 
     - The pitch angle allows the user to define the rotation around the horizontal axis (up/down) for the output images in degrees. The default pitch angle is 90 degrees. Adjusting the pitch can simulate looking up or down in the panorama.
+    - The default pitch angle is set to 90 degrees, which corresponds to looking straight ahead in the panorama.
+    - Increasing the pitch angle will simulate looking up, while decreasing it will simulate looking down.
 
 7. `--list-of-yaw`: 
-    - This argument takes a list of yaw angles (rotation around the vertical axis - left/right) in degrees. The default list is `[0, 60, 120, 180, 240, 300]`. Each yaw angle in the list will generate a separate output image, simulating rotation around the panorama. This allows for multiple views from a single panorama image.
+    - This argument takes a list of yaw angles (rotation around the vertical axis - left/right) in degrees. Each yaw angle in the list will generate a separate output image, simulating rotation around the panorama. This allows for multiple views from a single panorama image.
+    - The default list is `[0, 60, 120, 180, 240, 300]` (hint: not using 360deg because it is the same as 0deg)
+    - The images will be output in a clockwise direction starting from the first yaw angle.
 
 These arguments enable users to customize how panorama images are processed, including the dimensions of the output images, the field of view, and the angles of view. By adjusting these parameters, users can generate specific views from panorama images, useful for applications in virtual tours, simulations, or any project requiring detailed views from panoramic photography.
 
