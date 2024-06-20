@@ -1,4 +1,4 @@
-## Unwrapping the View: Transforming 360 Panoramas into Videos with Python
+## Unwrapping the View: Transforming 360 Panoramas into Planar Images with Python
 
 This repository contains Python code for transforming a 360-degree panoramic image into a dynamic video, simulating a camera sweep through the scene. The code utilizes basic image processing techniques and leverages NumPy for efficient vectorized computations. 
 
