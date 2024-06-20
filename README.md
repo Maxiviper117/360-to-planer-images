@@ -89,6 +89,7 @@ Replace `<input_directory>`, `<output_directory>`, `<FOV_value>`, `<width>`, `<h
 For example, to convert images from the `input_images` directory with a field of view of 120 degrees, output size of 1000x1500 pixels, pitch angle of 90 degrees, and yaw angles of 0, 60, 120, 180, 240, 300, you can run the following command:
 
 > NOTE: The `--list-of-yaw` argument should be followed by a list of yaw angles separated by spaces.
+>   - E.g. `--list-of-yaw 0 60 120 180 240 300`
 >   - And ensure that the yaw angles are too far apart, we want to have overlapping images.
 
 ```bash
