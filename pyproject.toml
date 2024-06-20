@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "360-to-planer-images"
+version = "0.1.0"
+description = ""
+authors = ["Maxiviper117"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^2.0.0"
+scipy = "^1.13.1"
+imageio = "^2.34.1"
+pillow = "^10.3.0"
+tqdm = "^4.66.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

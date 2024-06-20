@@ -1,0 +1,5 @@
+imageio==2.34.1
+numpy==2.0.0
+pillow==10.3.0
+scipy==1.13.1
+tqdm==4.66.4
