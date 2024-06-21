@@ -61,9 +61,10 @@ import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 
 # Add arguments
-parser.add_argument('--input_path', type=str, help='Path to the input panorama image', required=True)
+parser.add_argument('--input_path', type=str, help='Path to the input panorama images', required=True)
 parser.add_argument('--output_path', type=str, default='output_images', help='Path to the output images')
-parser.add_argument('--FOV', type=int, default=100, help='Field of View')
+parser.add_argument('--output_format', type=str, choices=['png', 'jpg', 'jpeg'], help='Output image format - "png", "jpg", "jpeg"')
+parser.add_argument('--FOV', type=int, default=90, help='Field of View')
 parser.add_argument('--output_width', type=int, default=1000, help='Width of the output image')
 parser.add_argument('--output_height', type=int, default=1500, help='Height of the output image')
 # parser.add_argument('--yaw', type=int, default=0, help='Yaw angle (rotation around the vertical axis - left/right)')
@@ -94,8 +95,8 @@ FOV = args.FOV
 output_size = (args.output_width, args.output_height)
 # yaw = args.yaw
 pitch = 180 - args.pitch
-
 yawList = args.list_of_yaw
+output_format = args.output_format
 
 
 
@@ -109,12 +110,16 @@ if not output_path.exists():
     output_path.mkdir()
 
 # Loop over each image in input_path
-for image_path in input_path.glob('*.jpg'):
-    file_name = image_path.stem  # Extract file name without extension
-    
-    for yaw in yawList:
-        output_image_name = f"{file_name}_pitch{args.pitch}_yaw{yaw}.jpg"
-        output_image_path = output_path / output_image_name
-        output_image = panorama_to_plane(str(image_path), FOV, output_size, yaw, pitch)
-        output_image.save(output_image_path)
+for image_extension in ['*.jpg', '*.jpeg', '*.png']:
+    for image_path in input_path.glob(image_extension):
+        file_name = image_path.stem  # Extract file name without extension
+        # get only the image file extension name
+        if args.output_format is None:
+            output_format = image_path.suffix[1:]
+        
+        for yaw in yawList:
+            output_image_name = f"{file_name}_pitch{args.pitch}_yaw{yaw}_fov{FOV}.{output_format}"
+            output_image_path = output_path / output_image_name
+            output_image = panorama_to_plane(str(image_path), FOV, output_size, yaw, pitch)
+            output_image.save(output_image_path)
 
