@@ -90,7 +90,7 @@ For example, to convert images from the `input_images` directory with a field of
 
 > NOTE: The `--list-of-yaw` argument should be followed by a list of yaw angles separated by spaces.
 >   - E.g. `--list-of-yaw 0 60 120 180 240 300`
->   - And ensure that the yaw angles are too far apart, we want to have overlapping images.
+>   - And ensure that the yaw angles are NOT too far apart, we want to have overlapping images.
 
 ```bash
 python pano_to_planar.py --input_path input_images --output_path output_images --FOV 120 --output_width 1000 --output_height 1500 --pitch 90 --list-of-yaw 0 45 90 135 180 225 270 315
