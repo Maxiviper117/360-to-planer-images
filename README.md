@@ -154,5 +154,7 @@ Add more `--<parameter>` arguments to test different parameters.
 
 ---
 
-![alt text](assets/pitch.png)
-![alt text](assets/yaw.png)
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+    <img src="assets/pitch.png" alt="alt text" width="400"/>
+    <img src="assets/yaw.png" alt="alt text" width="400"/>
+</div>
