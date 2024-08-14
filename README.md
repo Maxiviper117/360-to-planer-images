@@ -119,7 +119,7 @@ project_directory/
 
 ### Output
 
-The output images will be saved in the specified `output_path` directory with filenames indicating the yaw angle, e.g., `image1_yaw_0.jpg`, `image1_yaw_60.jpg`, etc.
+The output images will be saved in the specified `output_path` directory with filenames indicating the `pitch angle`, `yaw angle` and `FOV` e.g., `image1_pitch90_yaw0_fov90.jpg`,  `image1_pitch90_yaw30_fov90.jpg`, etc.
 
 ## Single image testing for finetuning parameters
 
