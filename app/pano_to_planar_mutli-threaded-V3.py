@@ -279,3 +279,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# Example usage:
+# python .\app\pano_to_planar_mutli-threaded-V3.py --input_path ./test-images --FOV 90 --output_width 1920 --output_height 1080 --pitch 90 --yaw_angles 0 90 180 270
