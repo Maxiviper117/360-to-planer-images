@@ -334,4 +334,4 @@ if __name__ == '__main__':
     main()
 
 # Example usage:
-# python pano_to_planar_optimized.py --input_path ./test-images --FOV 90 --output_width 1920 --output_height 1080 --pitch 90 --yaw_angles 0 90 180 270 --num_workers 4
+# python panorama_to_plane.py --input_path ./test-images --FOV 90 --output_width 1920 --output_height 1080 --pitch 90 --yaw_angles 0 90 180 270 --num_workers 4
