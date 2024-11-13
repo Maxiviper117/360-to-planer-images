@@ -346,16 +346,6 @@ This naming convention helps in identifying the projection parameters used for e
 
 This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-- **[Pillow](https://python-pillow.org/):** For image processing capabilities.
-- **[NumPy](https://numpy.org/):** For numerical operations.
-- **[SciPy](https://www.scipy.org/):** For advanced image mapping functions.
-- **[OpenCV](https://opencv.org/):** For optimized image remapping.
-- **[tqdm](https://tqdm.github.io/):** For progress bar implementation.
-- **[Python](https://www.python.org/):** The programming language used.
-
----
 
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
