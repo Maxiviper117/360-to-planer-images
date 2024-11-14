@@ -259,47 +259,7 @@ python app/panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
   - **Default:** `[0, 60, 120, 180, 240, 300]`
   - **Example:** `--yaw_angles 0 90 180 270`
 
-##### Example Commands
-
-1. **Basic Usage:**
-
-   Convert all panorama images in `input_images` with default settings.
-
-   ```bash
-   python app/panorama_to_plane.py --input_path ./input_images
-   ```
-
-2. **Specify Output Directory and Format:**
-
-   Save output images in `converted_images` directory with `png` format.
-
-   ```bash
-   python app/panorama_to_plane.py --input_path ./input_images --output_path ./converted_images --output_format png
-   ```
-
-3. **Customize FOV, Output Size, Pitch, and Yaw Angles:**
-
-   Convert images with a 120-degree FOV, output size of 1920x1080 pixels, pitch of 45 degrees, and yaw angles at 0, 90, 180, and 270 degrees.
-
-   ```bash
-   python app/panorama_to_plane.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
-   ```
-
-4. **Complete Example with Multiple Yaw Angles:**
-
-   ```bash
-   python app/panorama_to_plane.py \
-       --input_path ./input_images \
-       --output_path ./output_images \
-       --output_format jpg \
-       --FOV 100 \
-       --output_width 1280 \
-       --output_height 720 \
-       --pitch 60 \
-       --yaw_angles 0 45 90 135 180 225 270 315
-   ```
-
-##### Running the Command
+## Running the Command Python Script
 
 1. **Activate the Virtual Environment:**
 
@@ -327,7 +287,39 @@ python app/panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
 
 3. **Monitor Progress:**
 
-   The script utilizes `tqdm` to display a progress bar, indicating the processing status of images.
+   The script utilizes `tqdm` to display progress, indicating the processing status of images.
+
+4. **Completion Message:**
+
+   Upon successful completion, you should see a log message:
+
+   ```
+   [INFO] Processing completed.
+   ```
+
+   The output images will be available in the specified `output_path` directory.
+
+## Running the Command Executable
+
+1. **Open Terminal:**
+
+   Navigate to the directory containing `panorama_to_plane.exe`.
+
+   ```bash
+   cd path/to/executable
+   ```
+
+2. **Execute the Command:**
+
+   Use one of the example commands or customize your own based on your requirements.
+
+   ```bash
+   panorama_to_plane.exe --input_path ./input_images
+   ```
+
+3. **Monitor Progress:**
+
+   The script utilizes `tqdm` to display progress, indicating the processing status of images.
 
 4. **Completion Message:**
 
@@ -356,6 +348,80 @@ panorama1_pitch60_yaw90_fov100.jpg
 ```
 
 This naming convention helps in identifying the projection parameters used for each output image.
+
+
+## More Example Commands
+
+1. **Basic Usage:**
+
+   Convert all panorama images in `input_images` with default settings.
+
+   ```bash
+   python app/panorama_to_plane.py --input_path ./input_images
+   ```
+
+   If using the .exe file, you can run the following command:
+
+   ```bash
+   panorama_to_plane.exe --input_path ./input_images
+   ```
+
+2. **Specify Output Directory and Format:**
+
+   Save output images in `converted_images` directory with `png` format.
+
+   ```bash
+   python app/panorama_to_plane.py --input_path ./input_images --output_path ./converted_images --output_format png
+   ```
+
+   If using the .exe file, you can run the following command:
+
+   ```bash
+   panorama_to_plane.exe --input_path ./input_images --output_path ./converted_images --output_format png
+   ```
+
+3. **Customize FOV, Output Size, Pitch, and Yaw Angles:**
+
+   Convert images with a 120-degree FOV, output size of 1920x1080 pixels, pitch of 45 degrees, and yaw angles at 0, 90, 180, and 270 degrees.
+
+   ```bash
+   python app/panorama_to_plane.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
+   ```
+
+   If using the .exe file, you can run the following command:
+
+   ```bash
+   panorama_to_plane.exe --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
+   ```
+
+4. **Complete Example with Multiple Yaw Angles:**
+
+   ```bash
+   python app/panorama_to_plane.py \
+       --input_path ./input_images \
+       --output_path ./output_images \
+       --output_format jpg \
+       --FOV 100 \
+       --output_width 1280 \
+       --output_height 720 \
+       --pitch 60 \
+       --yaw_angles 0 45 90 135 180 225 270 315
+   ```
+
+   If using the .exe file, you can run the following command:
+
+   ```bash
+   panorama_to_plane.exe \
+       --input_path ./input_images \
+       --output_path ./output_images \
+       --output_format jpg \
+       --FOV 100 \
+       --output_width 1280 \
+       --output_height 720 \
+       --pitch 60 \
+       --yaw_angles 0 45 90 135 180 225 270 315
+   ```
+
 
 ## Troubleshooting
 
