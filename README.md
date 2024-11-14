@@ -1,5 +1,8 @@
 # Panorama to Plane Projection Converter
 
+This repository contains Python code for transforming a 360-degree panoramic image into a planar images, allowing extraction of specific views from the panorama. The script generates multiple planar images with specified yaw angles, field of view, and pitch angle, providing a way to visualize different perspectives from a single panorama image.
+
+This implementation is based on the Medium blog post by Coding Ballad: https://blogs.codingballad.com/unwrapping-the-view-transforming-360-panoramas-into-intuitive-videos-with-python-6009bd5bca94
 
 
 ## Table of Contents
