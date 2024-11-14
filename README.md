@@ -69,8 +69,9 @@ The script transforms panoramic (spherical) images into plane (rectilinear) proj
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/panorama-to-plane.git
-cd panorama-to-plane
+git clone https://github.com/Maxiviper117/360-to-planer-images.git
+
+cd 360-to-planer-images
 ```
 
 ### 2. Create a Virtual Environment (Recommended)
