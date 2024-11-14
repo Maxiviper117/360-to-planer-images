@@ -129,9 +129,10 @@ To run `panorama_to_plane.exe` from any directory in the terminal, you can add i
 
 ### Option 2: Running the Python Script
 
-<details>
 > [!NOTE]
 > Expand the section below for detailed instructions on running the Python script.
+
+<details>
 
 <summary>
 Instructions
