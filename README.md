@@ -117,7 +117,7 @@ The script is executed via the command line using `panorama_to_plane.py`. It sup
 ### Command-Line Arguments
 
 ```bash
-python panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
+python app/panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
 ```
 
 #### **Required Arguments**
@@ -178,7 +178,7 @@ python panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
    Convert all panorama images in `input_images` with default settings.
 
    ```bash
-   python panorama_to_plane.py --input_path ./input_images
+   python app/panorama_to_plane.py --input_path ./input_images
    ```
 
 2. **Specify Output Directory and Format:**
@@ -186,7 +186,7 @@ python panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
    Save output images in `converted_images` directory with `png` format.
 
    ```bash
-   python panorama_to_plane.py --input_path ./input_images --output_path ./converted_images --output_format png
+   python app/panorama_to_plane.py --input_path ./input_images --output_path ./converted_images --output_format png
    ```
 
 3. **Customize FOV, Output Size, Pitch, and Yaw Angles:**
@@ -194,13 +194,13 @@ python panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
    Convert images with a 120-degree FOV, output size of 1920x1080 pixels, pitch of 45 degrees, and yaw angles at 0, 90, 180, and 270 degrees.
 
    ```bash
-   python panorama_to_plane.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
+   python app/panorama_to_plane.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
    ```
 
 4. **Complete Example with Multiple Yaw Angles:**
 
    ```bash
-   python panorama_to_plane.py \
+   python app/panorama_to_plane.py \
        --input_path ./input_images \
        --output_path ./output_images \
        --output_format jpg \
@@ -234,7 +234,7 @@ python panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
    Use one of the example commands or customize your own based on your requirements.
 
    ```bash
-   python panorama_to_plane.py --input_path ./input_images
+   python app/panorama_to_plane.py --input_path ./input_images
    ```
 
 3. **Monitor Progress:**
