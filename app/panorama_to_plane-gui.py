@@ -122,12 +122,35 @@ class PanoramaProcessorGUI:
         self.setup_logging()
         self.create_profile_widgets()  # Create profile management UI
 
-    def create_widgets(self):
-        # Input Directory
-        input_frame = ttk.Frame(self.root, padding="10")
-        input_frame.grid(row=0, column=0, sticky="ew")
+        # Remove dark theme configurations to use default tkinter theme
+        # style = ttk.Style()
+        # style.theme_use('clam')
+        # style.configure('.', background='#2e2e2e', foreground='white')
+        # style.configure('TButton', background='#4e4e4e')
+        # style.configure('TLabel', background='#2e2e2e', foreground='white')
+        # style.configure('TEntry', foreground='black')  # Set input text color to black
+        # style.configure('TCombobox', foreground='black')  # Set Combobox text color to black
+        # self.log_text.config(bg='#2e2e2e', fg='white')
 
+    def create_widgets(self):
         # ...existing code...
+
+        # Create main frame with two columns
+        main_frame = ttk.Frame(self.root, padding="10")
+        main_frame.grid(row=0, column=0, sticky="nsew")
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
+        main_frame.rowconfigure(0, weight=1)
+
+        # Left Column
+        left_column = ttk.Frame(main_frame, padding="10")
+        left_column.grid(row=0, column=0, sticky="nsew")
+        left_column.columnconfigure(0, weight=1)
+
+        # Input Directory
+        input_frame = ttk.Frame(left_column, padding="10")
+        input_frame.grid(row=0, column=0, sticky="ew")
+        # ...existing input_frame code...
         ttk.Label(input_frame, text="Input Directory:").grid(row=0, column=0, columnspan=3, sticky="w")
         self.input_dir_var = tk.StringVar()
         self.input_dir_entry = ttk.Entry(input_frame, textvariable=self.input_dir_var, width=50)
@@ -136,10 +159,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # Output Directory
-        output_frame = ttk.Frame(self.root, padding="10")
+        output_frame = ttk.Frame(left_column, padding="10")
         output_frame.grid(row=1, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing output_frame code...
         ttk.Label(output_frame, text="Output Directory: (Leave blank to use default)").grid(row=0, column=0, columnspan=3, sticky="w")
         self.output_dir_var = tk.StringVar()
         self.output_dir_entry = ttk.Entry(output_frame, textvariable=self.output_dir_var, width=50)
@@ -148,10 +170,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # FOV
-        fov_frame = ttk.Frame(self.root, padding="10")
+        fov_frame = ttk.Frame(left_column, padding="10")
         fov_frame.grid(row=2, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing fov_frame code...
         ttk.Label(fov_frame, text="Field of View (FOV) [degrees]:").grid(row=0, column=0, columnspan=2, sticky="w")
         self.fov_var = tk.IntVar(value=90)
         self.fov_spin = ttk.Spinbox(fov_frame, from_=10, to=180, textvariable=self.fov_var, width=10)
@@ -169,10 +190,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # Pitch
-        pitch_frame = ttk.Frame(self.root, padding="10")
+        pitch_frame = ttk.Frame(left_column, padding="10")
         pitch_frame.grid(row=3, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing pitch_frame code...
         ttk.Label(pitch_frame, text="Pitch Angle [degrees]: (Controls vertical view)").grid(row=0, column=0, columnspan=2, sticky="w")
         self.pitch_var = tk.IntVar(value=90)
         self.pitch_spin = ttk.Spinbox(pitch_frame, from_=1, to=179, textvariable=self.pitch_var, width=10)
@@ -180,10 +200,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # Yaw Angles
-        yaw_frame = ttk.Frame(self.root, padding="10")
+        yaw_frame = ttk.Frame(left_column, padding="10")
         yaw_frame.grid(row=4, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing yaw_frame code...
         ttk.Label(yaw_frame, text="Yaw Angles [degrees, comma-separated]: (Controls horizontal viewpoints)").grid(row=0, column=0, columnspan=2, sticky="w")
         self.yaw_var = tk.StringVar(value="0,60,120,180,240,300")
         self.yaw_entry = ttk.Entry(yaw_frame, textvariable=self.yaw_var, width=50)
@@ -191,10 +210,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # Output Format
-        format_frame = ttk.Frame(self.root, padding="10")
+        format_frame = ttk.Frame(left_column, padding="10")
         format_frame.grid(row=5, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing format_frame code...
         ttk.Label(format_frame, text="Output Format:").grid(row=0, column=0, columnspan=2, sticky="w")
         self.format_var = tk.StringVar(value="png")
         self.format_combo = ttk.Combobox(format_frame, textvariable=self.format_var, values=["png", "jpg", "jpeg"], state="readonly", width=10)
@@ -202,10 +220,9 @@ class PanoramaProcessorGUI:
         # ...existing code...
 
         # Number of Workers
-        worker_frame = ttk.Frame(self.root, padding="10")
+        worker_frame = ttk.Frame(left_column, padding="10")
         worker_frame.grid(row=6, column=0, sticky="ew")
-
-        # ...existing code...
+        # ...existing worker_frame code...
         ttk.Label(worker_frame, text="Number of Workers:").grid(row=0, column=0, columnspan=2, sticky="w")
         self.worker_var = tk.IntVar(value=max(1, os.cpu_count() or 1))
         self.worker_spin = ttk.Spinbox(worker_frame, from_=1, to=os.cpu_count()*2, textvariable=self.worker_var, width=10)
@@ -213,38 +230,48 @@ class PanoramaProcessorGUI:
         ttk.Label(worker_frame, text="(Refers to multithreading processing. More workers consume more CPU)").grid(row=2, column=0, columnspan=2, sticky="w")
         # ...existing code...
 
-        # Start Button
-        start_frame = ttk.Frame(self.root, padding="10")
-        start_frame.grid(row=7, column=0, sticky="ew")
+        # Right Column
+        right_column = ttk.Frame(main_frame, padding="10")
+        right_column.grid(row=0, column=1, sticky="nsew")
+        right_column.columnconfigure(0, weight=1)
+        right_column.rowconfigure(3, weight=1)  # For log_frame to expand
+        self.right_column = right_column  # Make right_column accessible
 
-        # ...existing code...
+        # Start Button
+        start_frame = ttk.Frame(right_column, padding="10")
+        start_frame.grid(row=0, column=0, sticky="ew")
+        # ...existing start_frame code...
         self.start_button = ttk.Button(start_frame, text="Start Processing", command=self.start_processing)
         self.start_button.grid(row=0, column=0, pady=10)
         # ...existing code...
 
         # Progress Bar
-        progress_frame = ttk.Frame(self.root, padding="10")
-        progress_frame.grid(row=8, column=0, sticky="ew")
-
-        # ...existing code...
+        progress_frame = ttk.Frame(right_column, padding="10")
+        progress_frame.grid(row=1, column=0, sticky="ew")
+        # ...existing progress_frame code...
         self.progress_var = tk.DoubleVar()
         self.progress_bar = ttk.Progressbar(progress_frame, variable=self.progress_var, maximum=100)
         self.progress_bar.grid(row=0, column=0, sticky="ew")
         # ...existing code...
 
         # Status Log
-        log_frame = ttk.Frame(self.root, padding="10")
-        log_frame.grid(row=9, column=0, sticky="nsew")
-
-        # ...existing code...
+        log_frame = ttk.Frame(right_column, padding="10")
+        log_frame.grid(row=2, column=0, sticky="nsew")
+        # ...existing log_frame code...
         self.log_text = tk.Text(log_frame, height=10, state='disabled')
         self.log_text.pack(fill="both", expand=True)
         # ...existing code...
 
+        # Profile Management
+        profile_frame = ttk.Frame(right_column, padding="10")
+        profile_frame.grid(row=3, column=0, sticky="ew")
+        # ...existing profile_frame code...
+
         # Configure grid weights
         self.root.columnconfigure(0, weight=1)
-        log_frame.rowconfigure(0, weight=1)
-        log_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(0, weight=1)
+        left_column.rowconfigure(6, weight=1)
+        right_column.rowconfigure(3, weight=1)
 
     def setup_logging(self):
         # Redirect logging to the Tkinter Text widget
@@ -393,14 +420,23 @@ class PanoramaProcessorGUI:
                 pass  # Progress is handled via callbacks
 
         logging.info("Processing completed.")
+        
+        # Show the output folder location to the user
+        def show_output_location():
+            messagebox.showinfo("Processing Completed", f"Output images are saved in:\n{output_dir}")
+        
+        self.root.after(0, show_output_location)
+        
         self.enable_start_button()
 
     def enable_start_button(self):
         self.start_button.config(state='normal')
 
     def create_profile_widgets(self):
-        profile_frame = ttk.Frame(self.root, padding="10")
-        profile_frame.grid(row=10, column=0, sticky="ew")
+        # Move profile_frame to right_column
+        profile_frame = ttk.Frame(self.right_column, padding="10")
+        profile_frame.grid(row=3, column=0, sticky="ew")
+        # ...existing profile_frame code...
 
         ttk.Label(profile_frame, text="Profile Name:").grid(row=0, column=0, sticky="w")
         self.profile_name_var = tk.StringVar()
