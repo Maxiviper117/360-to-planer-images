@@ -116,7 +116,8 @@ class PanoramaProcessorGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Panorama to Plane Projection")
-        self.profile_file = Path(__file__).parent / "profiles.json"  # Ensure profiles.json is in the script directory
+        self.profile_file = Path.home() / ".panorama_to_plane" / "profiles.json"  # Save profiles.json in user's home directory
+        self.profile_file.parent.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
         self.load_profiles()  # Load profiles on initialization
         self.create_widgets()
         self.setup_logging()
@@ -297,15 +298,9 @@ class PanoramaProcessorGUI:
         if not input_dir or not os.path.isdir(input_dir):
             messagebox.showerror("Error", "Please select a valid input directory.")
             return
-        # if not output_dir:
-        #     messagebox.showerror("Error", "Please select an output directory.")
-        #     return
-
         if not output_dir:
-            script_dir = Path(__file__).parent
-            output_dir = str(script_dir / "output_images")
-            os.makedirs(output_dir, exist_ok=True)
-            logging.info(f"No output directory selected. Using default: {output_dir}")
+            messagebox.showerror("Error", "Please select an output directory.")
+            return
 
         try:
             FOV = int(self.fov_var.get())
