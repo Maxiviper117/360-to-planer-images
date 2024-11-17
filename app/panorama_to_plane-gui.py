@@ -163,7 +163,7 @@ class PanoramaProcessorGUI:
         output_frame = ttk.Frame(left_column, padding="10")
         output_frame.grid(row=1, column=0, sticky="ew")
         # ...existing output_frame code...
-        ttk.Label(output_frame, text="Output Directory: (Leave blank to use default)").grid(row=0, column=0, columnspan=3, sticky="w")
+        ttk.Label(output_frame, text="Output Directory:").grid(row=0, column=0, columnspan=3, sticky="w")
         self.output_dir_var = tk.StringVar()
         self.output_dir_entry = ttk.Entry(output_frame, textvariable=self.output_dir_var, width=50)
         self.output_dir_entry.grid(row=1, column=0, padx=5, sticky="w")
