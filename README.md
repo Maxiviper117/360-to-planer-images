@@ -31,6 +31,8 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
   - [Troubleshooting](#troubleshooting)
     - [Common Issues and Solutions](#common-issues-and-solutions)
   - [License](#license)
+- [Yaw and Pitch Angle Illustrations](#yaw-and-pitch-angle-illustrations)
+- [GUI](#gui)
 
 ## Overview
 
@@ -454,10 +456,13 @@ This naming convention helps in identifying the projection parameters used for e
 
 This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LICENSE) file for details.
 
-
+---
+# Yaw and Pitch Angle Illustrations
 <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
     <img src="assets/pitch.png" alt="Pitch Angle Illustration" width="400"/>
     <img src="assets/yaw.png" alt="Yaw Angle Illustration" width="400"/>
 </div>
 
----
+# GUI
+
+<img src="assets/GUI.png" alt="Yaw Angle Illustration" width="1000"/>
