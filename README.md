@@ -31,7 +31,6 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
   - [Troubleshooting](#troubleshooting)
     - [Common Issues and Solutions](#common-issues-and-solutions)
   - [License](#license)
-  - [Acknowledgments](#acknowledgments)
 
 ## Overview
 
@@ -455,13 +454,6 @@ This naming convention helps in identifying the projection parameters used for e
 
 This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LICENSE) file for details.
 
----
-
-## Acknowledgments
-
-- **Coding Ballad**: For the original implementation and detailed explanation.
-
----
 
 <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
     <img src="assets/pitch.png" alt="Pitch Angle Illustration" width="400"/>
