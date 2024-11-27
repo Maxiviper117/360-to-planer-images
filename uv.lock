@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "360-to-planer-images"
-version = "0.1.0"
+version = "0.2.2"
 source = { virtual = "." }
 dependencies = [
     { name = "auto-py-to-exe", marker = "python_full_version >= '3.12'" },
@@ -19,6 +19,11 @@ dependencies = [
     { name = "pillow", marker = "python_full_version >= '3.12'" },
     { name = "scipy", marker = "python_full_version >= '3.12'" },
     { name = "tqdm", marker = "python_full_version >= '3.12'" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pyinstall", marker = "python_full_version >= '3.12'" },
 ]
 
 [package.metadata]
@@ -32,6 +37,9 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.14.1" },
     { name = "tqdm", specifier = ">=4.67.0" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pyinstall", specifier = ">=0.1.4" }]
 
 [[package]]
 name = "altgraph"
@@ -397,6 +405,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/1d/b2/31537cf4b1ca98883
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/a3/a812df4e2dd5696d1f351d58b8fe16a405b234ad2886a0dab9183fb78109/pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc", size = 117552 },
 ]
+
+[[package]]
+name = "pyinstall"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/cc/8554fe5499561da83e80186e9603616c0a5e091b78237bc2abf9b66d86d3/pyinstall-0.1.4.tar.gz", hash = "sha256:bb2407a3664ce25454f7e4a93763198f3a6a43c0cc727e33a06c0ce18324cd15", size = 37894 }
 
 [[package]]
 name = "pyinstaller"

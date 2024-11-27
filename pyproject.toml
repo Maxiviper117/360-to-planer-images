@@ -14,3 +14,8 @@ dependencies = [
     "scipy>=1.14.1",
     "tqdm>=4.67.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pyinstall>=0.1.4",
+]

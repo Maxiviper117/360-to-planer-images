@@ -8,3 +8,5 @@ output_image/
 */output_image/
 */output
 output
+build/
+*.spec
