@@ -79,9 +79,7 @@ def main():
     # Generate non-GUI executables
     generate_executable_non_gui(panorama_to_plane_PATH, output_dir)
     generate_executable_non_gui(panorama_to_plane_pitch_PATH, output_dir)
-
-    # Uncomment the following line to generate a GUI executable
-    # generate_executable_gui(panorama_to_plane_gui_PATH, output_dir)
+    generate_executable_gui(panorama_to_plane_gui_PATH, output_dir)
 
 
 if __name__ == "__main__":
