@@ -1,19 +1,18 @@
 import os
-from pathlib import Path
-import cv2
-import numpy as np
+import argparse
 import logging
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
-import argparse
+
+import cv2
+import numpy as np
 
 # --------------------------------------------------------------------------------------
 # Configure logging
 # --------------------------------------------------------------------------------------
 log_file_path = Path(__file__).resolve().parent.parent / "logs" / "app.log"
-log_file_path.parent.mkdir(
-    parents=True, exist_ok=True
-)  # Ensure the logs directory exists
+log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,6 +23,46 @@ logging.basicConfig(
     ],
 )
 
+# --------------------------------------------------------------------------------------
+# Caches for Precomputed Mappings
+# --------------------------------------------------------------------------------------
+yaw_mapping_cache = {}
+pitch_mapping_cache = {}
+
+
+def get_yaw_mapping(pano_width, pano_height, yaw_angle):
+    """
+    Retrieve or compute the U, V mapping for a given (pano_width, pano_height, yaw_angle).
+    Using a cache to avoid recomputations for the same dimensions/angle.
+    """
+    key = (pano_width, pano_height, yaw_angle)
+    if key not in yaw_mapping_cache:
+        yaw_mapping_cache[key] = precompute_yaw_mapping(
+            pano_width, pano_height, yaw_angle
+        )
+    return yaw_mapping_cache[key]
+
+
+def get_pitch_mapping(
+    output_width, output_height, pitch_angle, pano_width, pano_height, fov_deg=90
+):
+    """
+    Retrieve or compute the U, V pitch mapping for a given set of parameters.
+    Using a cache to avoid recomputations.
+    """
+    key = (output_width, output_height, pitch_angle, pano_width, pano_height, fov_deg)
+    if key not in pitch_mapping_cache:
+        pitch_radians = np.radians(pitch_angle)
+        pitch_mapping_cache[key] = precompute_pitch_mapping(
+            W=output_width,
+            H=output_height,
+            FOV_rad=np.radians(fov_deg),
+            pitch_radian=pitch_radians,
+            pano_width=pano_width,
+            pano_height=pano_height,
+        )
+    return pitch_mapping_cache[key]
+
 
 # --------------------------------------------------------------------------------------
 # Precompute Yaw Mapping
@@ -32,48 +71,32 @@ def precompute_yaw_mapping(pano_width, pano_height, yaw_angle):
     """
     Precompute the mapping coordinates for horizontal (yaw) rotation.
     """
-    logging.info(
-        f"Precomputing yaw mapping for yaw_angle: {yaw_angle} degrees"
-    )  # Log the start of yaw mapping with the specified angle
+    logging.debug(f"[Yaw] Precomputing yaw mapping for yaw_angle: {yaw_angle} degrees")
 
     yaw_radians = np.radians(yaw_angle)  # Convert yaw angle from degrees to radians
 
     # Create meshgrid of pixel indices
     u, v = np.meshgrid(
-        np.arange(pano_width), np.arange(pano_height), indexing="xy"
-    )  # Generate grid of u (horizontal) and v (vertical) coordinates
-    u = u.astype(
-        np.float32
-    )  # Convert u coordinates to float32 for precise calculations
-    v = v.astype(
-        np.float32
-    )  # Convert v coordinates to float32 for precise calculations
+        np.arange(pano_width, dtype=np.float32),
+        np.arange(pano_height, dtype=np.float32),
+        indexing="xy",
+    )
 
-    # Calculate the azimuthal angle for each pixel
-    phi = (2 * np.pi * u / pano_width).astype(
-        np.float32
-    )  # Compute the azimuthal angle (phi) corresponding to each u coordinate
+    # Calculate the azimuthal angle (phi) for each pixel
+    phi = (2 * np.pi * u / pano_width).astype(np.float32)
+
     # Apply yaw rotation, ensure it wraps around at 2π
-    phi_rotated = (phi + yaw_radians) % (
-        2 * np.pi
-    )  # Rotate the azimuthal angle by yaw_radians and wrap within [0, 2π)
+    phi_rotated = (phi + yaw_radians) % (2 * np.pi)
 
     # Map the rotated azimuthal angle back to horizontal pixel coordinates
-    U = (phi_rotated * pano_width) / (
-        2 * np.pi
-    )  # Scale the rotated phi back to the panorama's horizontal pixel range
-    V = v  # Vertical coordinates remain unchanged as yaw rotation doesn't affect vertical positioning
+    U = (phi_rotated * pano_width) / (2 * np.pi)
+    V = v  # Vertical coordinates remain unchanged as yaw doesn't affect the vertical dimension
 
     # Clip and ensure valid float32
-    U = np.clip(U, 0, pano_width - 1).astype(
-        np.float32
-    )  # Ensure U values are within [0, pano_width - 1] and maintain float32 type
-    V = V.astype(np.float32)  # Ensure V remains as float32 for consistency
+    U = np.clip(U, 0, pano_width - 1).astype(np.float32)
+    V = V.astype(np.float32)
 
-    logging.debug(
-        f"Yaw mapping completed with shapes U: {U.shape}, V: {V.shape}"
-    )  # Log the completion of yaw mapping with the shapes of U and V
-    return U, V  # Return the horizontal and vertical mapping coordinates
+    return U, V
 
 
 # --------------------------------------------------------------------------------------
@@ -86,29 +109,25 @@ def precompute_pitch_mapping(W, H, FOV_rad, pitch_radian, pano_width, pano_heigh
     # Calculate the focal length based on the Field of View (FOV) and output image width (W)
     focal_length = (0.5 * W) / np.tan(FOV_rad / 2)
 
-    # Create a meshgrid of pixel indices for the output image
-    # 'u' corresponds to the horizontal axis (width), and 'v' corresponds to the vertical axis (height)
-    u, v = np.meshgrid(np.arange(W), np.arange(H), indexing="xy")
-
-    # Convert the meshgrid arrays to float32 for precise arithmetic operations
-    u = u.astype(np.float32)
-    v = v.astype(np.float32)
+    # Create meshgrid of pixel indices for the output image
+    u, v = np.meshgrid(
+        np.arange(W, dtype=np.float32),
+        np.arange(H, dtype=np.float32),
+        indexing="xy",
+    )
 
     # Calculate the 3D coordinates (x, y, z) in camera space for each pixel
-    # Center the coordinates by subtracting half the width and height
-    x = u - (W / 2.0)  # Shift the u coordinates to be centered around zero
-    y = (H / 2.0) - v  # Shift and flip the v coordinates to center and align vertically
-    z = np.full_like(
-        x, focal_length, dtype=np.float32
-    )  # Set the z coordinate to the focal length for all pixels
+    x = u - (W / 2.0)
+    y = (H / 2.0) - v
+    z = np.full_like(x, focal_length, dtype=np.float32)
 
     # Compute the Euclidean norm (magnitude) of each vector (x, y, z)
     norm = np.sqrt(x**2 + y**2 + z**2)
 
-    # Normalize the vectors to have a unit length (1), preserving their direction
-    x_norm = x / norm  # Normalize the x component
-    y_norm = y / norm  # Normalize the y component
-    z_norm = z / norm  # Normalize the z component
+    # Normalize the vectors (x, y, z)
+    x_norm = x / norm
+    y_norm = y / norm
+    z_norm = z / norm
 
     # Define the rotation matrix for pitch transformation around the x-axis
     R_pitch = np.array(
@@ -120,42 +139,30 @@ def precompute_pitch_mapping(W, H, FOV_rad, pitch_radian, pano_width, pano_heigh
         dtype=np.float32,
     )
 
-    # Stack the normalized vectors into a single array and reshape for matrix multiplication
-    vectors = np.stack((x_norm, y_norm, z_norm), axis=0).reshape(
-        3, -1
-    )  # Shape: (3, W*H)
+    # Stack vectors for matrix multiplication: shape (3, W*H)
+    vectors = np.stack((x_norm, y_norm, z_norm), axis=0).reshape(3, -1)
 
-    # Apply the pitch rotation matrix to the vectors
-    rotated = R_pitch @ vectors  # Matrix multiplication to rotate the vectors
+    # Apply the pitch rotation matrix
+    rotated = R_pitch @ vectors
 
-    # Reshape the rotated vectors back to the original 3D grid shape
-    x_rot, y_rot, z_rot = rotated.reshape(
-        3, H, W
-    )  # Each rotated component has shape (H, W)
+    # Reshape back to (3, H, W)
+    x_rot, y_rot, z_rot = rotated.reshape(3, H, W)
 
-    # Convert the rotated Cartesian coordinates to spherical coordinates
-    # Calculate the polar angle (theta') using the arccosine of the z component
-    theta_prime = np.arccos(z_rot).astype(np.float32)  # Polar angle in radians
+    # Convert the rotated Cartesian coordinates to spherical
+    # theta_prime (polar) via arccos of z
+    theta_prime = np.arccos(z_rot).astype(np.float32)
+    # phi_prime (azimuth) via arctan2 of (y, x)
+    phi_prime = (np.arctan2(y_rot, x_rot) % (2 * np.pi)).astype(np.float32)
 
-    # Calculate the azimuthal angle (phi') using the arctangent of y_rot over x_rot
-    # The modulo operation ensures the angle wraps around at 2π radians
-    phi_prime = (np.arctan2(y_rot, x_rot) % (2 * np.pi)).astype(
-        np.float32
-    )  # Azimuthal angle in radians
+    # Map azimuth to horizontal pixel coords in panorama
+    U = (phi_prime * pano_width) / (2 * np.pi)
+    # Map polar angle to vertical pixel coords in panorama
+    V = (theta_prime * pano_height) / np.pi
 
-    # Map the azimuthal angle back to horizontal pixel coordinates in the panorama
-    U = (phi_prime * pano_width) / (2 * np.pi)  # Scale phi' to panorama width
-
-    # Map the polar angle back to vertical pixel coordinates in the panorama
-    V = (theta_prime * pano_height) / np.pi  # Scale theta' to panorama height
-
-    # Clip the U coordinates to ensure they fall within the panorama's horizontal bounds
+    # Clip to valid panorama bounds
     U = np.clip(U, 0, pano_width - 1).astype(np.float32)
-
-    # Clip the V coordinates to ensure they fall within the panorama's vertical bounds
     V = np.clip(V, 0, pano_height - 1).astype(np.float32)
 
-    # Return the precomputed horizontal (U) and vertical (V) mapping coordinates
     return U, V
 
 
@@ -163,70 +170,45 @@ def precompute_pitch_mapping(W, H, FOV_rad, pitch_radian, pano_width, pano_heigh
 # Process Yaw and Pitch
 # --------------------------------------------------------------------------------------
 def process_yaw_and_pitchs(
-    pano_image, yaw_angle, pitch_angles, output_width, output_height
+    pano_image, yaw_angle, pitch_angles, output_width, output_height, fov_deg=90
 ):
     """
     Process a single yaw angle and multiple pitch angles, returning all slices.
     """
-    logging.info(f"Starting processing for yaw_angle: {yaw_angle} degrees")
-
+    logging.debug(f"[Yaw/Pitch] Starting processing for yaw_angle={yaw_angle}")
     pano_height, pano_width, _ = pano_image.shape
-    logging.debug(f"Panorama dimensions - Width: {pano_width}, Height: {pano_height}")
 
-    # Precompute yaw mapping
-    logging.info("Precomputing yaw mapping")
-    U_yaw, V_yaw = precompute_yaw_mapping(pano_width, pano_height, yaw_angle)
-    logging.debug(f"Yaw mapping shapes - U_yaw: {U_yaw.shape}, V_yaw: {V_yaw.shape}")
-
-    # Apply yaw rotation to the panorama image
-    logging.info("Applying yaw rotation to the panorama image")
+    # --- Yaw Remap ---
+    U_yaw, V_yaw = get_yaw_mapping(pano_width, pano_height, yaw_angle)
     rotated_pano = cv2.remap(
         pano_image,
         U_yaw,
         V_yaw,
         interpolation=cv2.INTER_LINEAR,
-        borderMode=cv2.BORDER_REFLECT,
+        # borderMode=cv2.BORDER_REFLECT,  # If reflect is needed; else BORDER_CONSTANT might be faster
+        borderMode=cv2.BORDER_CONSTANT,
     )
-    logging.debug("Yaw rotation applied successfully")
 
     slices = []
-    for idx, pitch_angle in enumerate(pitch_angles):
-        logging.info(
-            f"Processing pitch_angle {idx + 1}/{len(pitch_angles)}: {pitch_angle} degrees"
+    for pitch_angle in pitch_angles:
+        logging.debug(f"[Pitch] Processing pitch_angle={pitch_angle}")
+        U_pitch, V_pitch = get_pitch_mapping(
+            output_width,
+            output_height,
+            pitch_angle,
+            pano_width,
+            pano_height,
+            fov_deg,
         )
-        pitch_radians = np.radians(pitch_angle)
-
-        # Precompute pitch mapping
-        logging.debug("Precomputing pitch mapping")
-        U_pitch, V_pitch = precompute_pitch_mapping(
-            W=output_width,
-            H=output_height,
-            FOV_rad=np.radians(90),  # Example FOV (90 degrees)
-            pitch_radian=pitch_radians,
-            pano_width=pano_width,
-            pano_height=pano_height,
-        )
-        logging.debug(
-            f"Pitch mapping shapes - U_pitch: {U_pitch.shape}, V_pitch: {V_pitch.shape}"
-        )
-
-        # Apply pitch rotation to the rotated panorama image
-        logging.info("Applying pitch rotation to the rotated panorama image")
         slice_image = cv2.remap(
             rotated_pano,
             U_pitch,
             V_pitch,
             interpolation=cv2.INTER_LINEAR,
-            borderMode=cv2.BORDER_REFLECT,
+            borderMode=cv2.BORDER_CONSTANT,
         )
-        logging.debug(f"Pitch rotation applied for pitch_angle: {pitch_angle} degrees")
-
         slices.append(slice_image)
-        logging.info(
-            f"Slice for pitch_angle {pitch_angle} degrees appended to slices list"
-        )
 
-    logging.info(f"Completed processing for yaw_angle: {yaw_angle} degrees")
     return slices
 
 
@@ -242,27 +224,25 @@ def process_single_image(
     output_height,
     num_workers=4,
     output_format="png",
+    fov_deg=90,
 ):
     """
     Helper function to read a single image, process it, and save results.
     """
-    logging.info(f"Loading image: {input_image_path}")
-    input_image = cv2.imread(str(input_image_path))
 
+    logging.info(f"Loading image: {input_image_path}")
+    # Keep the image in BGR format; no need to switch to RGB if not required.
+    input_image = cv2.imread(str(input_image_path))
     if input_image is None:
         logging.error(f"Failed to read image: {input_image_path}")
         return
 
-    input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
-    logging.info(f"Image loaded and converted to RGB: {input_image_path.name}")
-
-    # Extract the base name of the input image file (without extension)
     base_name = input_image_path.stem
-    logging.debug(f"Base name extracted: {base_name}")
 
     tasks = []
     with ThreadPoolExecutor(max_workers=num_workers) as executor:
         for yaw_angle in yaw_angles:
+            # Submit an entire batch of pitch transformations for this yaw.
             tasks.append(
                 executor.submit(
                     process_yaw_and_pitchs,
@@ -271,6 +251,7 @@ def process_single_image(
                     pitch_angles,
                     output_width,
                     output_height,
+                    fov_deg,
                 )
             )
 
@@ -280,15 +261,12 @@ def process_single_image(
         ):
             try:
                 slices = future.result()
-                logging.info(f"Completed processing for yaw_angle: {yaw_angle}")
-
                 # Save each pitch result
                 for i, slice_image in enumerate(slices):
                     out_filename = f"{base_name}_yaw_{yaw_angle}_pitch_{pitch_angles[i]}.{output_format}"
                     output_file = output_dir / out_filename
-                    slice_bgr = cv2.cvtColor(slice_image, cv2.COLOR_RGB2BGR)
-                    cv2.imwrite(str(output_file), slice_bgr)
-                    logging.info(f"Saved {output_file}")
+                    cv2.imwrite(str(output_file), slice_image)
+                    logging.debug(f"Saved {output_file}")
             except Exception as e:
                 logging.error(f"Error processing yaw_angle {yaw_angle}: {e}")
 
@@ -305,20 +283,22 @@ def main(
     output_height,
     num_workers=None,
     output_format="png",
+    fov_deg=90,
 ):
     """
     Main function to process either a single image or an entire folder of images.
     If num_workers is None, automatically sets it to ~90% of CPU cores.
     """
-    # Automatically assign worker count if num_workers is not specified
+
+    # Automatically assign worker count if not specified
     if num_workers is None:
-        cpu_cores = os.cpu_count() or 1  # fallback to 1 if somehow None
+        cpu_cores = os.cpu_count() or 1
         num_workers = max(1, int(cpu_cores * 0.9))
         logging.info(
-            f"No num_workers specified. Using {num_workers} threads (~90% of CPU cores)."
+            f"No num_workers specified. Using {num_workers} (~90% of CPU cores)."
         )
     else:
-        logging.info(f"Using {num_workers} worker threads as specified.")
+        logging.info(f"Using {num_workers} worker threads.")
 
     output_dir = Path(output_path)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -347,6 +327,7 @@ def main(
                 output_height=output_height,
                 num_workers=num_workers,
                 output_format=output_format,
+                fov_deg=fov_deg,
             )
     else:
         # Process a single file
@@ -359,6 +340,7 @@ def main(
             output_height=output_height,
             num_workers=num_workers,
             output_format=output_format,
+            fov_deg=fov_deg,
         )
 
     logging.info("All processing completed.")
@@ -415,7 +397,7 @@ if __name__ == "__main__":
         "--FOV",
         type=int,
         default=90,
-        help="Field of View in degrees (currently unused in code, just a placeholder)",
+        help="Field of View in degrees",
     )
     parser.add_argument(
         "--output_width",
@@ -434,20 +416,20 @@ if __name__ == "__main__":
         nargs="+",
         type=check_pitch,
         default=[30, 60, 90, 120, 150],
-        help="List of pitch angles in degrees (1-179). Example: --pitch_angles 30 60 90",
+        help="List of pitch angles in degrees (1-179). e.g. --pitch_angles 30 60 90",
     )
     parser.add_argument(
         "--yaw_angles",
         nargs="+",
         type=int,
         default=[0, 90, 180, 270],
-        help="List of yaw angles in degrees (0-360). Example: --yaw_angles 0 90 180 270",
+        help="List of yaw angles in degrees (0-360). e.g. --yaw_angles 0 90 180 270",
     )
     parser.add_argument(
         "--num_workers",
         type=int,
         default=None,
-        help="Number of worker threads for parallel yaw processing. If not specified, uses ~90%% of CPU cores.",
+        help="Number of worker threads for parallel yaw processing. If not specified, uses ~90% of CPU cores.",
     )
 
     args = parser.parse_args()
@@ -461,7 +443,9 @@ if __name__ == "__main__":
         output_height=args.output_height,
         num_workers=args.num_workers,
         output_format=args.output_format,
+        fov_deg=args.FOV,
     )
+
 
 # uv run --python 3.12 .\app\panorama_to_plane-pitch.py --input_path "./test-images" --output_path "./output_images" --output_format "png" --output_width 800 --output_height 800 --pitch_angles 30 60 90 120 150 --yaw_angles 0 90 180 270
 # uv run --python 3.12 .\app\panorama_to_plane-pitch.py --input_path "./test-images" --output_path "./output_images" --output_width 800 --output_height 800 --pitch_angles 30 60 90 120 150 --yaw_angles 0 90 180 270
