@@ -462,3 +462,6 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         output_format=args.output_format,
     )
+
+# uv run --python 3.12 .\app\panorama_to_plane-pitch.py --input_path "./test-images" --output_path "./output_images" --output_format "png" --output_width 800 --output_height 800 --pitch_angles 30 60 90 120 150 --yaw_angles 0 90 180 270
+# uv run --python 3.12 .\app\panorama_to_plane-pitch.py --input_path "./test-images" --output_path "./output_images" --output_width 800 --output_height 800 --pitch_angles 30 60 90 120 150 --yaw_angles 0 90 180 270
