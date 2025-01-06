@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug panorama_to_plane.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/panorama_to_plane.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "--input_path", "./test-images",
+                "--FOV", "90",
+                "--output_width", "1920",
+                "--output_height", "1080",
+                "--pitch", "90",
+                "--yaw_angles", "0", "90", "180",
+            ]
+        }
+    ]
+}

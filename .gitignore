@@ -10,3 +10,4 @@ output_image/
 output
 build/
 *.spec
+logs/

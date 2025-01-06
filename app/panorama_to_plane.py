@@ -41,7 +41,7 @@ def get_rotation_matrix(yaw_radian: float, pitch_radian: float) -> np.ndarray:
         [0, np.sin(pitch_radian), np.cos(pitch_radian)]
     ], dtype=np.float32)
 
-    # return R_pitch @ R_yaw
+    # return combined rotation matrix that will be used to calculate the new x, y, z coordinates after rotation
     return np.dot(R_pitch, R_yaw)
 
 @lru_cache(maxsize=None)
@@ -49,55 +49,110 @@ def precompute_mapping(W: int, H: int, FOV_rad: float, yaw_radian: float, pitch_
     """
     Precompute the mapping coordinates for a given set of parameters.
 
-    Args:
-        W (int): Output image width.
-        H (int): Output image height.
-        FOV_rad (float): Field of View in radians.
-        yaw_radian (float): Yaw angle in radians.
-        pitch_radian (float): Pitch angle in radians.
-        pano_width (int): Panorama image width.
-        pano_height (int): Panorama image height.
+    This function processes every pixel in the output image by performing the following steps:
+        1. **Calculating Camera Space Coordinates**:
+            - Converts pixel coordinates `(u, v)` to camera space `(x, y, z)` by centering them and applying the focal length based on the Field of View.
+        2. **Normalizing Vectors to Unit Length**:
+            - Ensures that each vector `(x, y, z)` has a unit length to maintain consistent scaling during rotation.
+        3. **Applying Rotation Transformations**:
+            - Applies rotation matrices based on the provided yaw and pitch angles to rotate each individual pixel's vector in 3D space.
+            - This rotation adjusts the perspective of the panorama to align with the desired viewpoint.
+        4. **Converting Rotated Vectors to Spherical Coordinates**:
+            - Transforms the rotated Cartesian coordinates `(x_rot, y_rot, z_rot)` into spherical coordinates `(theta_prime, phi_prime)` for easier mapping to the panorama.
+        5. **Mapping Spherical Coordinates to Panorama Image Coordinates**:
+            - Translates the spherical coordinates to panorama image coordinates `(U, V)` by scaling them according to the panorama's width and height.
+
+    **Detailed Workflow**:
+        - **Meshgrid Creation**:
+            - Generates a grid of `(u, v)` coordinates covering the entire output image.
+        - **Vector Calculation**:
+            - Centers the `(u, v)` coordinates and calculates the corresponding `z` value using the focal length.
+        - **Normalization**:
+            - Computes the norm of each vector and normalizes the `x`, `y`, and `z` components.
+        - **Rotation**:
+            - Constructs the combined rotation matrix using yaw and pitch angles.
+            - Applies the rotation matrix to each normalized vector to obtain the rotated coordinates.
+        - **Spherical Conversion**:
+            - Calculates the polar and azimuthal angles from the rotated vectors.
+        - **Final Mapping**:
+            - Maps these angles to the panorama image's pixel coordinates, ensuring that each output pixel correctly corresponds to its position in the panorama.
+
+    **Performance Considerations**:
+        - The function utilizes vectorized operations with NumPy for efficient computation over all pixels.
+        - The `@lru_cache` decorator caches the results, preventing redundant calculations for identical input parameters and enhancing performance during repeated calls.
+
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: Mapping coordinates (U, V).
     """
-    f = (0.5 * W) / np.tan(FOV_rad / 2)
+    # Calculate the focal length based on the Field of View and output image width
+    focal_length = (0.5 * W) / np.tan(FOV_rad / 2)
 
-    # Create meshgrid for image coordinates
+    # Create a meshgrid for the output image coordinates
     u, v = np.meshgrid(np.arange(W), np.arange(H), indexing='xy')
 
-    # Convert u and v to float32 before arithmetic operations
+    # Convert u and v to float32 for subsequent arithmetic operations
     u = u.astype(np.float32)
     v = v.astype(np.float32)
 
-    # Perform arithmetic operations
-    x = u - (W / 2.0)  # Subtract half of the width
-    y = (H / 2.0) - v  # Subtract v from half of the height
-    z = np.full_like(x, f, dtype=np.float32)
+    # Calculate the 3D x, y, and z coordinates in the camera space
+    # - Each pixel (u, v) in the equirectangular image is first converted to 3D camera space coordinates (x, y, z).
+    # - This involves centering the pixel coordinates (u, v) and calculating the z component using the focal length derived from the Field of View (FOV).
+    x = u - (W / 2.0)  # Center the x coordinates around zero
+    y = (H / 2.0) - v  # Center the y coordinates around zero and flip vertically
+    z = np.full_like(x, focal_length, dtype=np.float32)  # Set z to the focal length
 
-    # Normalize vectors
-    norm = np.sqrt(x**2 + y**2 + z**2)
-    x_norm = x / norm
-    y_norm = y / norm
-    z_norm = z / norm
+    # Normalize the vectors to unit length
+    # - Normalizing a vector scales it to have a unit length (length of 1) while maintaining its direction.
+    norm = np.sqrt(x**2 + y**2 + z**2)  # Calculate the norm (magnitude) of each vector
+    x_norm = x / norm  # Normalize x coordinates
+    y_norm = y / norm  # Normalize y coordinates
+    z_norm = z / norm  # Normalize z coordinates
 
-    # Apply rotation
-    R = get_rotation_matrix(yaw_radian, pitch_radian)
-    vectors = np.stack((x_norm, y_norm, z_norm), axis=0)  # Shape: (3, H, W)
-    rotated = R @ vectors.reshape(3, -1)
-    rotated = rotated.reshape(3, H, W)
-    x_rot, y_rot, z_rot = rotated
+    # Apply the rotation matrix to the normalized vectors
+    # - Yaw and pitch angles are applied using rotation matrices to adjust the viewpoint.
+    # - These rotations operate in the 3D space, modifying the (x, y, z) vectors accordingly.
+    R = get_rotation_matrix(yaw_radian, pitch_radian)  # Get the combined rotation matrix, which only deals with x(pitch) and y(yaw) rotation
+    vectors = np.stack((x_norm, y_norm, z_norm), axis=0)  # Stack the normalized vectors into a single array
+    rotated = R @ vectors.reshape(3, -1)  # Apply the rotation matrix to the vectors
+    rotated = rotated.reshape(3, H, W)  # Reshape the rotated vectors back to the original dimensions
+    x_rot, y_rot, z_rot = rotated  # Extract the rotated x, y, and z coordinates
 
-    # Convert back to spherical coordinates
-    theta_prime = np.arccos(z_rot).astype(np.float32)
-    phi_prime = (np.arctan2(y_rot, x_rot) % (2 * np.pi)).astype(np.float32)
+    # Convert the rotated vectors back to spherical coordinates
+    # - After rotation, the 3D vectors (x_rot, y_rot, z_rot) are converted back to spherical coordinates (theta_prime, phi_prime).
+    # - These spherical coordinates are essential for mapping back to the 2D panorama image.
+    theta_prime = np.arccos(z_rot).astype(np.float32)  # Calculate the polar angle (theta) from the z coordinate
+    
+    """
+    Calculate the azimuthal angle (phi') in radians from the rotated x and y coordinates.
 
-    U = (phi_prime * pano_width) / (2 * np.pi)
-    V = (theta_prime * pano_height) / np.pi
+    This line performs the following steps:
+    1. Uses `np.arctan2(y_rot, x_rot)` to compute the azimuthal angle, taking into account the quadrant.
+    - The output can be outside the standard range [0, 2π) due to rotations.
+    2. Applies the modulo operation (% (2 * np.pi)) to wrap the angle back into the range [0, 2π).
+    - This ensures that rotations beyond the bounds of the panorama (e.g., > 360° or < 0°)
+        are correctly mapped to valid coordinates in the equirectangular projection.
+    3. Converts the resulting wrapped angle to `np.float32` for compatibility with further calculations.
 
-    # Ensure coordinates are within image boundaries
-    U = np.clip(U, 0, pano_width - 1).astype(np.float32)
-    V = np.clip(V, 0, pano_height - 1).astype(np.float32)
+    This ensures seamless handling of horizontal rotations in the panorama.
+    """
+    phi_prime = (np.arctan2(y_rot, x_rot) % (2 * np.pi)).astype(np.float32)  
+    
+    """
+    After rotation, the 3D vectors (x_rot, y_rot, z_rot) are converted back to spherical coordinates (theta_prime, phi_prime).
+    
+    Then we can now map these spherical coordinates to the panorama image's pixel coordinates (U, V).
+    
+    Thus pixel by
+    
+    """
+    # Map the spherical coordinates to the panorama image coordinates
+    U = (phi_prime * pano_width) / (2 * np.pi)  # Scale phi to the panorama width
+    V = (theta_prime * pano_height) / np.pi  # Scale theta to the panorama height
+
+    # Ensure the coordinates are within the image boundaries
+    U = np.clip(U, 0, pano_width - 1).astype(np.float32)  # Clip U to be within valid range
+    V = np.clip(V, 0, pano_height - 1).astype(np.float32)  # Clip V to be within valid range
 
     return U, V
 
