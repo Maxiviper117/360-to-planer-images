@@ -263,7 +263,7 @@ def process_single_image(
                 slices = future.result()
                 # Save each pitch result
                 for i, slice_image in enumerate(slices):
-                    out_filename = f"{base_name}_yaw_{yaw_angle}_pitch_{pitch_angles[i]}.{output_format}"
+                    out_filename = f"{base_name}_{output_width}x{output_height}_yaw_{yaw_angle}_pitch_{pitch_angles[i]}.{output_format}"
                     output_file = output_dir / out_filename
                     cv2.imwrite(str(output_file), slice_image)
                     logging.debug(f"Saved {output_file}")
