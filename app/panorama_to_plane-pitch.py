@@ -9,21 +9,6 @@ import cv2
 import numpy as np
 
 # --------------------------------------------------------------------------------------
-# Configure logging
-# --------------------------------------------------------------------------------------
-log_file_path = Path(__file__).resolve().parent.parent / "logs" / "app.log"
-log_file_path.parent.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.StreamHandler(),  # Log to console
-        logging.FileHandler(log_file_path, mode="a"),  # Log to file
-    ],
-)
-
-# --------------------------------------------------------------------------------------
 # Caches for Precomputed Mappings
 # --------------------------------------------------------------------------------------
 yaw_mapping_cache = {}
@@ -284,6 +269,7 @@ def main(
     num_workers=None,
     output_format="png",
     fov_deg=90,
+    enable_file_logging=False,
 ):
     """
     Main function to process either a single image or an entire folder of images.
@@ -431,8 +417,31 @@ if __name__ == "__main__":
         default=None,
         help="Number of worker threads for parallel yaw processing. If not specified, uses ~90% of CPU cores.",
     )
+    parser.add_argument(
+        "--enable_file_logging",
+        action="store_true",
+        help="Enable logging to a file.",
+    )
 
     args = parser.parse_args()
+
+    # --------------------------------------------------------------------------------------
+    # Configure logging
+    # --------------------------------------------------------------------------------------
+    log_file_path = Path(__file__).resolve().parent.parent / "logs" / "app.log"
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    handlers = [
+        logging.StreamHandler(),  # Log to console
+    ]
+    if args.enable_file_logging:
+        handlers.append(logging.FileHandler(log_file_path, mode="a"))  # Log to file
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=handlers,
+    )
 
     main(
         input_path=args.input_path,
@@ -444,6 +453,7 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         output_format=args.output_format,
         fov_deg=args.FOV,
+        enable_file_logging=args.enable_file_logging,
     )
 
 
