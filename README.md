@@ -1,6 +1,6 @@
 # Panorama to Plane Projection Converter
 
-This repository contains tools for transforming a 360-degree panoramic image into planar images, allowing extraction of specific views from the panorama. The converter generates multiple planar images with specified yaw angles, field of view, and pitch angle, providing a way to visualize different perspectives from a single panorama image.
+This repository contains tools for transforming a 360-degree panoramic image into planar images, allowing extraction of specific views from the panorama. The converter generates multiple planar images with specified yaw angles, multiple pitch angles, field of view, and resolution, providing a way to visualize different perspectives from a single panorama image.
 
 This implementation is based on the Medium blog post by Coding Ballad: [Unwrapping the View: Transforming 360° Panoramas into Intuitive Videos with Python](https://blogs.codingballad.com/unwrapping-the-view-transforming-360-panoramas-into-intuitive-videos-with-python-6009bd5bca94)
 
@@ -14,13 +14,6 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
   - [Usage Options](#usage-options)
     - [Option 1: Using the Compiled Executable](#option-1-using-the-compiled-executable)
     - [Option 2: Running the Python Script](#option-2-running-the-python-script)
-      - [Prerequisites](#prerequisites)
-      - [Installation](#installation)
-      - [Usage](#usage)
-    - [Option 3: Using the Compiled GUI Executable](#option-3-using-the-compiled-gui-executable)
-      - [Download](#download)
-      - [Setup](#setup)
-      - [Usage](#usage-1)
   - [Command-Line Arguments](#command-line-arguments)
     - [Required Arguments](#required-arguments)
     - [Optional Arguments](#optional-arguments)
@@ -33,20 +26,12 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
   - [License](#license)
 - [Yaw and Pitch Angle Illustrations](#yaw-and-pitch-angle-illustrations)
 - [GUI](#gui)
+
 ## Overview
 
-The **Panorama to Plane Projection Converter** is a tool designed to transform panoramic images into plane (rectilinear) projections. This conversion is essential for applications in virtual reality, gaming, photography, and more, where a standard perspective view is required from a 360-degree panorama.
+The **Panorama to Plane Projection Converter** is a tool designed to transform panoramic images into plane (rectilinear) projections. This conversion is essential for applications in virtual reality, gaming, photography, and more, where standard perspective views are required from a 360-degree panorama.
 
-By adjusting parameters such as Field of View (FOV), yaw, and pitch, users can generate multiple perspective views from a single panoramic image, facilitating versatile usage across various platforms and mediums.
-
-## Features
-
-- **Flexible Projection Parameters:** Customize FOV, yaw, and pitch to generate specific perspectives.
-- **Batch Processing:** Convert multiple panorama images simultaneously with support for parallel processing.
-- **Multiple Output Formats:** Save projected images in popular formats like PNG, JPG, and JPEG.
-- **High Performance:** Leveraging optimized libraries for efficient image processing.
-- **User-Friendly Interface:** Easily configure and execute conversions.
-- **Progress Tracking:** Monitor processing status with real-time progress indicators.
+By adjusting parameters such as Field of View (FOV), multiple pitch and yaw angles, resolution, users can generate various perspective views from a single panoramic image, facilitating versatile usage across different platforms and mediums.
 
 ## How It Works
 
@@ -54,7 +39,7 @@ The converter transforms panoramic (spherical) images into plane (rectilinear) p
 
 1. **Coordinate Mapping:**
 
-   - The tool maps Cartesian coordinates from the output plane to spherical coordinates based on specified yaw and pitch angles.
+   - The tool maps Cartesian coordinates from the output plane to spherical coordinates based on specified yaw and multiple pitch angles.
    - Rotation matrices are applied to accurately adjust the view direction.
 
 2. **Color Interpolation:**
@@ -64,14 +49,14 @@ The converter transforms panoramic (spherical) images into plane (rectilinear) p
 
 3. **Parallel Processing:**
 
-   - Utilizing optimized processing techniques, the tool processes multiple images and yaw angles concurrently, significantly reducing processing time for large batches.
+   - Utilizing optimized processing techniques, the tool processes multiple images, yaw angles, and pitch angles concurrently, significantly reducing processing time for large batches.
 
 4. **Output Generation:**
-   - The projected images are saved with descriptive filenames indicating the applied parameters, facilitating easy identification and organization.
+   - The projected images are saved with descriptive filenames indicating the applied parameters and resolution, facilitating easy identification and organization.
 
 ## Usage Options
 
-You can use the **Panorama to Plane Projection Converter** in three ways:
+You can use the **Panorama to Plane Projection Converter** in two ways:
 
 1. **Option 1: Using the Compiled Executable**
 
@@ -81,15 +66,11 @@ You can use the **Panorama to Plane Projection Converter** in three ways:
 
    For users who want to run the code directly or modify it.
 
-3. **Option 3: Using the Compiled GUI Executable**
-
-   For users who prefer a graphical user interface without dealing with command-line arguments.
-
 ---
 
 ### Option 1: Using the Compiled Executable
 
-We provide a compiled executable `panorama_to_plane.exe` for Windows users, attached to the [latest GitHub release](https://github.com/Maxiviper117/360-to-planer-images/releases). This option allows you to use the converter without installing Python or any dependencies.
+We provide a compiled executable `panorama_to_plane.exe` for Windows users, available in the [latest GitHub release](https://github.com/Maxiviper117/360-to-planer-images/releases). This option allows you to use the converter without installing Python or any dependencies.
 
 **Steps to Use the Executable:**
 
@@ -116,7 +97,7 @@ We provide a compiled executable `panorama_to_plane.exe` for Windows users, atta
 **Example Command:**
 
 ```bash
-panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --FOV 120 --pitch 45 --yaw_angles 0 90 180 270
+panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --FOV 120 --output_width 1920 --output_height 1080 --pitch_angles 30 60 90 --yaw_angles 0 90 180 270
 ```
 
 **Notes:**
@@ -199,50 +180,26 @@ This option is for users who want to run the script directly or make modificatio
 
 #### Usage
 
-The script is executed via the command line using `app/panorama_to_plane.py`. It supports both single and batch processing of panoramic images.
+The script is executed via the command line using `app/panorama_to_plane-pitch.py`. It supports both single and batch processing of panoramic images with multiple pitch and yaw angles.
 
 Use the following command:
 
 ```bash
-python app/panorama_to_plane.py --input_path <INPUT_PATH> [OPTIONS]
+python app/panorama_to_plane-pitch.py --input_path <INPUT_PATH> [OPTIONS]
 ```
 
 Replace `<INPUT_PATH>` with the path to your input images folder, and include any optional arguments as needed.
 
 ---
 
-### Option 3: Using the Compiled GUI Executable
-
-We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows users, attached to the [latest GitHub release](https://github.com/Maxiviper117/360-to-planer-images/releases). This option allows you to use the converter with a graphical user interface without installing Python or any dependencies.
-
-#### Download
-
-- Visit the [latest release page](https://github.com/Maxiviper117/360-to-planer-images/releases) and download `panorama_to_plane-gui.exe`.
-
-#### Setup
-
-- Move the `panorama_to_plane-gui.exe` file to a dedicated folder on your system.
-
-#### Usage
-
-- Double-click `panorama_to_plane-gui.exe` to launch the GUI application.
-- Use the graphical interface to select your input images and configure the desired parameters.
-- Start the conversion process through the GUI.
-
-**Note:**
-
-- The GUI version does not use command-line arguments. All configurations are done through the interface.
-
----
-
 ## Command-Line Arguments
 
-**These arguments are only used for `app/panorama_to_plane.py` and the compiled `panorama_to_plane.exe` (Option 1 and Option 2).**
+**These arguments are used for both `app/panorama_to_plane-pitch.py` and the compiled `panorama_to_plane.exe` (Option 1 and Option 2).**
 
 ### Required Arguments
 
 - `--input_path`:
-  - **Description:** Path to the directory containing input panorama images.
+  - **Description:** Path to the directory containing input panorama images or a single panorama image.
   - **Type:** `str`
   - **Example:** `--input_path ./input_images`
 
@@ -257,7 +214,7 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
 - `--output_format`:
   - **Description:** Format of the output images.
   - **Choices:** `png`, `jpg`, `jpeg`
-  - **Default:** Inherits from input image format.
+  - **Default:** `png`
   - **Example:** `--output_format png`
 
 - `--FOV`:
@@ -269,26 +226,38 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
 - `--output_width`:
   - **Description:** Width of the output image in pixels.
   - **Type:** `int`
-  - **Default:** `1000`
+  - **Default:** `800`
   - **Example:** `--output_width 1920`
 
 - `--output_height`:
   - **Description:** Height of the output image in pixels.
   - **Type:** `int`
-  - **Default:** `1500`
+  - **Default:** `800`
   - **Example:** `--output_height 1080`
 
-- `--pitch`:
-  - **Description:** Pitch angle in degrees (1-179).
-  - **Type:** `int`
-  - **Default:** `90`
-  - **Example:** `--pitch 45`
+- `--pitch_angles`:
+  - **Description:** List of pitch angles in degrees (1-179).
+  - **Type:** `int` (list)
+  - **Default:** `30 60 90 120 150`
+  - **Example:** `--pitch_angles 30 60 90`
 
 - `--yaw_angles`:
   - **Description:** List of yaw angles in degrees (0-360).
   - **Type:** `int` (list)
-  - **Default:** `[0, 60, 120, 180, 240, 300]`
+  - **Default:** `0 90 180 270`
   - **Example:** `--yaw_angles 0 90 180 270`
+
+- `--num_workers`:
+  - **Description:** Number of worker threads for parallel yaw processing. If not specified, uses ~90% of CPU cores.
+  - **Type:** `int`
+  - **Default:** `~90% of CPU cores`
+  - **Example:** `--num_workers 4`
+
+- `--enable_file_logging`:
+  - **Description:** Enable logging to a file.
+  - **Type:** `flag`
+  - **Default:** Disabled
+  - **Example:** `--enable_file_logging`
 
 ---
 
@@ -301,7 +270,7 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
    Convert all panorama images in `input_images` with default settings.
 
    ```bash
-   python app/panorama_to_plane.py --input_path ./input_images
+   python app/panorama_to_plane-pitch.py --input_path ./input_images
    ```
 
 2. **Specify Output Directory and Format:**
@@ -309,15 +278,21 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
    Save output images in `converted_images` directory with `png` format.
 
    ```bash
-   python app/panorama_to_plane.py --input_path ./input_images --output_path ./converted_images --output_format png
+   python app/panorama_to_plane-pitch.py --input_path ./input_images --output_path ./converted_images --output_format png
    ```
 
-3. **Customize FOV, Output Size, Pitch, and Yaw Angles:**
+3. **Customize FOV, Output Size, Multiple Pitch and Yaw Angles:**
 
-   Convert images with a 120-degree FOV, output size of 1920x1080 pixels, pitch of 45 degrees, and yaw angles at 0, 90, 180, and 270 degrees.
+   Convert images with a 120-degree FOV, output size of 1920x1080 pixels, pitch angles at 30, 60, and 90 degrees, and yaw angles at 0, 90, 180, and 270 degrees.
 
    ```bash
-   python app/panorama_to_plane.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch 45 --yaw_angles 0 90 180 270
+   python app/panorama_to_plane-pitch.py --input_path ./input_images --FOV 120 --output_width 1920 --output_height 1080 --pitch_angles 30 60 90 --yaw_angles 0 90 180 270
+   ```
+
+4. **Enable File Logging:**
+
+   ```bash
+   python app/panorama_to_plane-pitch.py --input_path ./input_images --enable_file_logging
    ```
 
 ### Running the Compiled Executable
@@ -334,10 +309,10 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
    panorama_to_plane.exe --input_path ./input_images --output_path ./converted_images --output_format png
    ```
 
-3. **Complete Example with Multiple Yaw Angles:**
+3. **Complete Example with Multiple Yaw and Pitch Angles:**
 
    ```bash
-   panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --output_format jpg --FOV 100 --output_width 1280 --output_height 720 --pitch 60 --yaw_angles 0 45 90 135 180 225 270 315
+   panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --output_format jpg --FOV 100 --output_width 1280 --output_height 720 --pitch_angles 30 60 90 120 150 --yaw_angles 0 45 90 135 180 225 270 315
    ```
 
 **Note:** Use backslash (`\`) for line continuation in Linux/macOS. For Windows Command Prompt, write the command in a single line.
@@ -347,18 +322,18 @@ We provide a compiled GUI executable `panorama_to_plane-gui.exe` for Windows use
 Each output image will be named following this pattern:
 
 ```
-<original_filename>_pitch<pitch>_yaw<yaw>_fov<FOV>.<format>
+<original_filename>_<output_width>x<output_height>_yaw_<yaw>_pitch_<pitch>.<format>
 ```
 
 **Example:**
 
-For an input file named `panorama1.jpg` with a pitch of `60`, yaw of `90`, FOV of `100`, and output format `jpg`, the output file will be:
+For an input file named `panorama1.jpg` with an output resolution of `1920x1080`, yaw of `90`, pitch of `60`, and output format `jpg`, the output file will be:
 
 ```
-panorama1_pitch60_yaw90_fov100.jpg
+panorama1_1920x1080_yaw_90_pitch_60.jpg
 ```
 
-This naming convention helps in identifying the projection parameters used for each output image.
+This naming convention helps in identifying the projection parameters and resolution used for each output image.
 
 ---
 
@@ -433,7 +408,7 @@ This naming convention helps in identifying the projection parameters used for e
    **Solutions:**
 
    - Reduce the `output_width` and `output_height` to lower values.
-   - Limit the number of parallel workers by adjusting the processing parameters.
+   - Limit the number of parallel workers by adjusting the `--num_workers` parameter.
    - Ensure that your system has sufficient RAM and CPU resources.
 
 6. **Output Images Are Blank or Incorrectly Mapped**
@@ -448,6 +423,19 @@ This naming convention helps in identifying the projection parameters used for e
    - Double-check the yaw and pitch values for correctness.
    - Review the rotation matrix implementation if you're modifying the code.
    - Test the tool with a single image and known parameters to isolate issues.
+
+7. **Invalid Pitch Angle Error**
+
+   **Error Message:**
+
+   ```
+   argparse.ArgumentTypeError: Pitch angle must be between 1 and 179 degrees, got 0.
+   ```
+
+   **Solution:**
+
+   - Ensure that all pitch angles provided are within the valid range (1-179 degrees).
+   - Adjust your command to exclude invalid pitch angles.
 
 ---
 
