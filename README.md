@@ -9,11 +9,13 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
 - [Panorama to Plane Projection Converter](#panorama-to-plane-projection-converter)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
-  - [Features](#features)
   - [How It Works](#how-it-works)
   - [Usage Options](#usage-options)
     - [Option 1: Using the Compiled Executable](#option-1-using-the-compiled-executable)
     - [Option 2: Running the Python Script](#option-2-running-the-python-script)
+      - [Prerequisites](#prerequisites)
+      - [Installation](#installation)
+      - [Usage](#usage)
   - [Command-Line Arguments](#command-line-arguments)
     - [Required Arguments](#required-arguments)
     - [Optional Arguments](#optional-arguments)
@@ -70,13 +72,13 @@ You can use the **Panorama to Plane Projection Converter** in two ways:
 
 ### Option 1: Using the Compiled Executable
 
-We provide a compiled executable `panorama_to_plane.exe` for Windows users, available in the [latest GitHub release](https://github.com/Maxiviper117/360-to-planer-images/releases). This option allows you to use the converter without installing Python or any dependencies.
+We provide a compiled executable `panorama_to_plane-pitch.exe` for Windows users, available in the [latest GitHub release](https://github.com/Maxiviper117/360-to-planer-images/releases). This option allows you to use the converter without installing Python or any dependencies.
 
 **Steps to Use the Executable:**
 
 1. **Download the Executable:**
 
-   - Visit the [latest release page](https://github.com/Maxiviper117/360-to-planer-images/releases) and download `panorama_to_plane.exe`.
+   - Visit the [latest release page](https://github.com/Maxiviper117/360-to-planer-images/releases) and download `panorama_to_plane-pitch.exe`.
 
 2. **Prepare Your Images:**
 
@@ -84,12 +86,12 @@ We provide a compiled executable `panorama_to_plane.exe` for Windows users, avai
 
 3. **Open Command Prompt:**
 
-   - Navigate to the directory containing `panorama_to_plane.exe`.
+   - Navigate to the directory containing `panorama_to_plane-pitch.exe`.
 
 4. **Run the Executable with Desired Options:**
 
    ```bash
-   panorama_to_plane.exe --input_path <INPUT_PATH> [OPTIONS]
+   panorama_to_plane-pitch.exe --input_path <INPUT_PATH> [OPTIONS]
    ```
 
    Replace `<INPUT_PATH>` with the path to your input images folder, and include any optional arguments as needed.
@@ -97,7 +99,7 @@ We provide a compiled executable `panorama_to_plane.exe` for Windows users, avai
 **Example Command:**
 
 ```bash
-panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --FOV 120 --output_width 1920 --output_height 1080 --pitch_angles 30 60 90 --yaw_angles 0 90 180 270
+panorama_to_plane-pitch.exe --input_path ./input_images --output_path ./output_images --FOV 120 --output_width 1920 --output_height 1080 --pitch_angles 30 60 90 --yaw_angles 0 90 180 270
 ```
 
 **Notes:**
@@ -107,9 +109,9 @@ panorama_to_plane.exe --input_path ./input_images --output_path ./output_images 
 
 **Adding the Executable to Windows PATH (Optional):**
 
-To run `panorama_to_plane.exe` from any directory in the terminal, you can add its folder to the Windows system PATH.
+To run `panorama_to_plane-pitch.exe` from any directory in the terminal, you can add its folder to the Windows system PATH.
 
-1. **Locate the Folder** containing `panorama_to_plane.exe`.
+1. **Locate the Folder** containing `panorama_to_plane-pitch.exe`.
 2. **Copy the Path**:
    - Right-click the folder, then select **Properties**. Copy the folder path shown in the **Location** field.
 3. **Edit System Environment Variables**:
@@ -119,7 +121,7 @@ To run `panorama_to_plane.exe` from any directory in the terminal, you can add i
    - In the **System variables** section, scroll down and select **Path**, then click **Edit**.
    - Click **New**, paste the folder path, and click **OK** to save.
 5. **Verify**:
-   - Open a new command prompt and type `panorama_to_plane.exe`. If it runs, you've successfully added it to PATH.
+   - Open a new command prompt and type `panorama_to_plane-pitch.exe`. If it runs, you've successfully added it to PATH.
 
 ---
 
@@ -194,7 +196,7 @@ Replace `<INPUT_PATH>` with the path to your input images folder, and include an
 
 ## Command-Line Arguments
 
-**These arguments are used for both `app/panorama_to_plane-pitch.py` and the compiled `panorama_to_plane.exe` (Option 1 and Option 2).**
+**These arguments are used for both `app/panorama_to_plane-pitch.py` and the compiled `panorama_to_plane-pitch.exe` (Option 1 and Option 2).**
 
 ### Required Arguments
 
@@ -300,19 +302,19 @@ Replace `<INPUT_PATH>` with the path to your input images folder, and include an
 1. **Basic Usage:**
 
    ```bash
-   panorama_to_plane.exe --input_path ./input_images
+   panorama_to_plane-pitch.exe --input_path ./input_images
    ```
 
 2. **Specify Output Directory and Format:**
 
    ```bash
-   panorama_to_plane.exe --input_path ./input_images --output_path ./converted_images --output_format png
+   panorama_to_plane-pitch.exe --input_path ./input_images --output_path ./converted_images --output_format png
    ```
 
 3. **Complete Example with Multiple Yaw and Pitch Angles:**
 
    ```bash
-   panorama_to_plane.exe --input_path ./input_images --output_path ./output_images --output_format jpg --FOV 100 --output_width 1280 --output_height 720 --pitch_angles 30 60 90 120 150 --yaw_angles 0 45 90 135 180 225 270 315
+   panorama_to_plane-pitch.exe --input_path ./input_images --output_path ./output_images --output_format jpg --FOV 100 --output_width 1280 --output_height 720 --pitch_angles 30 60 90 120 150 --yaw_angles 0 45 90 135 180 225 270 315
    ```
 
 **Note:** Use backslash (`\`) for line continuation in Linux/macOS. For Windows Command Prompt, write the command in a single line.
