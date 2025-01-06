@@ -28,6 +28,7 @@ This implementation is based on the Medium blog post by Coding Ballad: [Unwrappi
   - [License](#license)
 - [Yaw and Pitch Angle Illustrations](#yaw-and-pitch-angle-illustrations)
 - [GUI](#gui)
+  - [LEGACY - NOT CURRENTLY IN USE](#legacy---not-currently-in-use)
 
 ## Overview
 
@@ -453,5 +454,5 @@ This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LIC
 </div>
 
 # GUI
-
+## LEGACY - NOT CURRENTLY IN USE
 <img src="assets/GUI.png" alt="Yaw Angle Illustration" width="1000"/>
