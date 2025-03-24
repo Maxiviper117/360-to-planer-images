@@ -5,18 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "auto-py-to-exe>=2.44.2",
-    "bump-my-version>=0.29.0",
-    "certifi>=2024.8.30",
-    "imageio>=2.36.0",
-    "numpy>=2.1.3",
-    "opencv-python>=4.10.0.84",
-    "pillow>=11.0.0",
-    "scipy>=1.14.1",
-    "tqdm>=4.67.0",
-]
-
-[dependency-groups]
-dev = [
-    "pyinstall>=0.1.4",
+    "colorama==0.4.6",
+    "imageio==2.36.0",
+    "numpy==2.1.3",
+    "opencv-python==4.10.0.84",
+    "pillow==11.0.0",
+    "scipy==1.14.1",
+    "tqdm==4.67.0",
 ]
