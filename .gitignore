@@ -11,3 +11,4 @@ output
 build/
 *.spec
 logs/
+.venv
