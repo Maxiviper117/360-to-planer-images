@@ -14,6 +14,17 @@ import numpy as np
 yaw_mapping_cache = {}
 pitch_mapping_cache = {}
 
+def get_version():
+    """
+    Returns the version of the script.
+    """
+    version_file = Path(__file__).resolve().parent.parent / "VERSION"
+    if version_file.exists():
+        with open(version_file, "r") as f:
+            return f"version: {f.read().strip()}"
+    else:
+        return "unknown"
+
 
 def get_yaw_mapping(pano_width, pano_height, yaw_angle):
     """
@@ -421,6 +432,13 @@ if __name__ == "__main__":
         "--enable_file_logging",
         action="store_true",
         help="Enable logging to a file.",
+    )
+    
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"%(prog)s {get_version()}",
+        help="Show version information",
     )
 
     args = parser.parse_args()
