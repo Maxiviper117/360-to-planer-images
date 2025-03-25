@@ -8,22 +8,35 @@ from tqdm import tqdm
 import cv2
 import numpy as np
 
+# set a VERSION constant for the script reading from environment variable: VERSION
+
+
 # --------------------------------------------------------------------------------------
 # Caches for Precomputed Mappings
 # --------------------------------------------------------------------------------------
 yaw_mapping_cache = {}
 pitch_mapping_cache = {}
 
+VERSION = "0.3.1"
+
 def get_version():
     """
     Returns the version of the script.
     """
-    version_file = Path(__file__).resolve().parent.parent / "VERSION"
-    if version_file.exists():
-        with open(version_file, "r") as f:
-            return f"version: {f.read().strip()}"
-    else:
-        return "unknown"
+    
+    return VERSION
+
+    # VERSION = os.environ.get("VERSION")  # Get the version from environment variable
+    
+    # print(f"VERSION env var version: {VERSION}")
+    # if not VERSION:
+    #     # If VERSION env var is empty or not set, try to get it from the VERSION file
+    #     version_file = Path(__file__).resolve().parent.parent / "VERSION"
+    #     if version_file.exists():
+    #         with open(version_file, "r") as f:
+    #             VERSION = f.read().strip()
+    #     else:
+    #         VERSION = "0.3.1"0.3.1""  # Default fallback version
 
 
 def get_yaw_mapping(pano_width, pano_height, yaw_angle):
