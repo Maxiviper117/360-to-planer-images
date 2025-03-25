@@ -1,7 +1,6 @@
 import subprocess  # Import subprocess to run shell commands
 from pathlib import Path  # Import Path from pathlib for filesystem path manipulations
 
-
 # Define the current script's path and the app folder path
 CURR_PATH = Path(__file__)  # Get the path of the current script
 app_folder_path = (
@@ -72,14 +71,11 @@ def main():
     )  # Define the output directory for executables
 
     # Define paths to the Python scripts to be converted
-    panorama_to_plane_PATH = app_folder_path / "panorama_to_plane.py"
-    panorama_to_plane_pitch_PATH = app_folder_path / "panorama_to_plane_pitch.py"
-    panorama_to_plane_gui_PATH = app_folder_path / "panorama_to_plane-gui.py"
+    panorama_to_plane_PATH = app_folder_path / "panorama_to_plane-pitch.py"
 
     # Generate non-GUI executables
     generate_executable_non_gui(panorama_to_plane_PATH, output_dir)
-    generate_executable_non_gui(panorama_to_plane_pitch_PATH, output_dir)
-    generate_executable_gui(panorama_to_plane_gui_PATH, output_dir)
+    # generate_executable_gui(panorama_to_plane_gui_PATH, output_dir)
 
 
 if __name__ == "__main__":
