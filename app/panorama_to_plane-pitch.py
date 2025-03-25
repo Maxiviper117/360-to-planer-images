@@ -17,7 +17,7 @@ import numpy as np
 yaw_mapping_cache = {}
 pitch_mapping_cache = {}
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 def get_version():
     """
@@ -36,7 +36,7 @@ def get_version():
     #         with open(version_file, "r") as f:
     #             VERSION = f.read().strip()
     #     else:
-    #         VERSION = "0.3.1"0.3.1""  # Default fallback version
+    #         VERSION = "0.3.2"0.3.1""  # Default fallback version
 
 
 def get_yaw_mapping(pano_width, pano_height, yaw_angle):
